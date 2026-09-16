@@ -1,0 +1,53 @@
+<?php
+require_once __DIR__ . '/includes/functions.php';
+$pageTitle = 'AI Runner — Treinos de corrida personalizados';
+include __DIR__ . '/includes/header.php';
+?>
+
+<nav class="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
+    <span class="text-2xl font-extrabold tracking-tight">AI <span class="text-lime-400">Runner</span></span>
+    <div class="flex gap-3">
+        <a href="/login.php" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Entrar</a>
+        <a href="/cadastro.php" class="px-4 py-2 rounded-lg text-sm font-medium bg-lime-400 text-slate-950 hover:bg-lime-300">Criar conta</a>
+    </div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-6">
+    <section class="text-center py-16">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">AI <span class="text-lime-400">Runner</span></h1>
+        <p class="mt-4 text-lg md:text-xl text-slate-300">Treinos de corrida personalizados para você.</p>
+        <div class="mt-8 flex justify-center gap-4">
+            <a href="/cadastro.php" class="px-6 py-3 rounded-xl bg-lime-400 text-slate-950 font-semibold hover:bg-lime-300">Criar conta</a>
+            <a href="/login.php" class="px-6 py-3 rounded-xl border border-slate-700 font-semibold hover:bg-slate-800">Entrar</a>
+        </div>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-6 py-10">
+        <div class="bg-slate-900 rounded-2xl p-6 shadow">
+            <div class="text-3xl">🏃</div>
+            <h3 class="mt-3 font-bold text-lg">Treinos personalizados</h3>
+            <p class="mt-1 text-slate-400 text-sm">Treinos de acordo com seu objetivo e nível.</p>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-6 shadow">
+            <div class="text-3xl">📈</div>
+            <h3 class="mt-3 font-bold text-lg">Acompanhamento</h3>
+            <p class="mt-1 text-slate-400 text-sm">Veja seus treinos e marque como realizado.</p>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-6 shadow">
+            <div class="text-3xl">🚀</div>
+            <h3 class="mt-3 font-bold text-lg">Evolução</h3>
+            <p class="mt-1 text-slate-400 text-sm">Progrida rumo à sua meta de corrida.</p>
+        </div>
+    </section>
+
+    <section class="py-16 flex justify-center">
+        <div class="bg-slate-900 rounded-2xl p-8 shadow text-center max-w-sm w-full">
+            <h2 class="text-sm uppercase tracking-widest text-lime-400 font-semibold">Plano Mensal</h2>
+            <p class="mt-2 text-4xl font-extrabold">R$ 29,90</p>
+            <p class="text-slate-400 text-sm">por mês</p>
+            <a href="/cadastro.php" class="mt-6 inline-block w-full px-6 py-3 rounded-xl bg-lime-400 text-slate-950 font-semibold hover:bg-lime-300">Começar agora</a>
+        </div>
+    </section>
+</main>
+
+<?php include __DIR__ . '/includes/footer.php'; ?>
