@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
-$pageTitle = 'AI Runner — Treinos de corrida personalizados';
+$pageTitle = 'IA Runner — Treinos de corrida personalizados';
 include __DIR__ . '/includes/header.php';
 ?>
 
