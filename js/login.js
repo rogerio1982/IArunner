@@ -19,5 +19,5 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         return;
     }
 
-    window.location.href = '/dashboard.html';
+    window.location.href = '/views/dashboard.html';
 });

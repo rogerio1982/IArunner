@@ -11,7 +11,7 @@ async function apiFetch(url, options = {}) {
 async function requireLogin() {
     const { ok, data } = await apiFetch('/api/auth/me.php');
     if (!ok) {
-        window.location.href = '/login.html';
+        window.location.href = '/views/login.html';
         return null;
     }
     return data.user;

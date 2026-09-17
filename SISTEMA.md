@@ -7,9 +7,11 @@ pago via Mercado Pago.
 ## Arquitetura
 
 - **Front-end**: HTML + CSS (Tailwind via CDN) + JavaScript puro, sem
-  framework nem build tool. Arquivos estáticos na raiz do projeto (`*.html`,
-  `js/*.js`) — precisam ficar na raiz porque o deploy da Hostinger serve o
-  repositório clonado diretamente, sem opção de apontar para uma subpasta.
+  framework nem build tool. Páginas em `views/*.html`, scripts em `js/*.js`.
+  Precisam ficar sob a raiz do projeto (não numa subpasta tipo `public/`)
+  porque o deploy da Hostinger serve o repositório clonado diretamente, sem
+  opção de apontar para uma subpasta como document root — por isso as URLs
+  públicas das páginas são `/views/login.html`, `/views/dashboard.html` etc.
 - **Back-end**: PHP puro (sem framework), funcionando como API JSON em `api/`.
   Front e back se comunicam via `fetch()`.
 - **Banco de dados**: MySQL/MariaDB (schema em `database.sql`).
@@ -20,17 +22,17 @@ pago via Mercado Pago.
 
 ## Fluxo do usuário
 
-1. **Landing page** (`index.html`) — apresenta o produto, com CTAs
+1. **Landing page** (`views/index.html`) — apresenta o produto, com CTAs
    para criar conta ou entrar.
-2. **Cadastro** (`cadastro.html` → `api/auth/cadastro.php`) — nome,
+2. **Cadastro** (`views/cadastro.html` → `api/auth/cadastro.php`) — nome,
    e-mail, WhatsApp e senha. Cria o usuário com **7 dias de teste grátis**
    (`trial_ends_at`) e já inicia a sessão.
-3. **Onboarding** (`onboarding.html` → `api/onboarding.php`) — usuário
+3. **Onboarding** (`views/onboarding.html` → `api/onboarding.php`) — usuário
    escolhe o nível (iniciante / intermediário / avançado). O sistema monta um
    **plano semanal de 7 dias** (segunda a domingo da semana atual) a partir
    da tabela `workouts` para aquele nível, e associa ao usuário em
    `user_workouts` com status `pending`.
-4. **Dashboard** (`dashboard.html` → `api/dashboard.php`) — tela
+4. **Dashboard** (`views/dashboard.html` → `api/dashboard.php`) — tela
    principal, mostra:
    - Saudação com o primeiro nome do usuário.
    - Aviso de dias restantes de teste grátis (se ainda estiver no trial).
@@ -42,10 +44,10 @@ pago via Mercado Pago.
 5. **Marcar treino como feito** (`api/treinos.php`) — atualiza o status do
    treino do dia para `done`. Valida que o registro pertence ao usuário
    logado (evita que um usuário marque treino de outro).
-6. **Assinatura** (`pagamento.html` → `api/pagamento.php`) — cria uma
+6. **Assinatura** (`views/pagamento.html` → `api/pagamento.php`) — cria uma
    preferência de pagamento no Mercado Pago (Checkout Pro) e redireciona o
    usuário para a página de pagamento deles.
-7. **Retorno do pagamento** (`pagamento_retorno.html` →
+7. **Retorno do pagamento** (`views/pagamento_retorno.html` →
    `api/pagamento_retorno.php`) — página de retorno do Mercado Pago, mostra
    mensagem conforme o status (`approved`, `pending`, `failure`). O status
    real da assinatura só é confirmado pelo webhook, não por esse parâmetro
@@ -63,7 +65,7 @@ pago via Mercado Pago.
   de teste de 7 dias (`trial_ends_at > now()`).
 - **Plano semanal** é fixo por nível (não é gerado por IA ainda — há um TODO
   no código para futuramente gerar dinamicamente via OpenAI).
-- **Importação de treinos** (`admin/import.html` →
+- **Importação de treinos** (`views/admin/import.html` →
   `api/admin/import.php`) — área administrativa protegida por senha
   (`ADMIN_PASSWORD` no `.env`, verificada com `hash_equals`). Permite subir um
   CSV com o plano de treinos por nível/dia da semana, que é inserido/atualizado
@@ -71,13 +73,15 @@ pago via Mercado Pago.
 
 ## Estrutura de pastas
 
-Tudo fica direto na raiz do repositório (a Hostinger publica a raiz do
-repo clonado, sem opção de apontar para uma subpasta como document root):
+Tudo fica sob a raiz do repositório (a Hostinger publica a raiz do repo
+clonado, sem opção de apontar para uma subpasta como document root), com o
+front-end organizado em `views/`:
 
 ```
-*.html                → uma página por tela (front-end estático)
+views/                → páginas HTML do front-end estático
+  *.html              → uma página por tela (ex: /views/login.html)
+  admin/import.html   → tela de importação de treinos (admin)
 js/*.js               → lógica de cada página (fetch para a API, manipulação de DOM)
-admin/import.html     → tela de importação de treinos (admin)
 
 api/                  → back-end, só responde JSON, nunca HTML
   _bootstrap.php      → helper comum (sessão, header JSON, json_response())
@@ -114,7 +118,7 @@ são endpoints, não implementação interna.
 - Sessão PHP (`$_SESSION['user_id']`) com cookie enviado pelo navegador
   (`fetch(..., { credentials: 'include' })` no front).
 - Toda página do front que exige login chama `api/auth/me.php` ao carregar;
-  se não autenticado, redireciona para `/login.html`.
+  se não autenticado, redireciona para `/views/login.html`.
 - Senhas de usuário com `password_hash`/`password_verify`.
 - Senha de admin comparada com `hash_equals` (evita timing attack).
 - Proteção contra IDOR em `api/treinos.php`: o `UPDATE` sempre filtra por

@@ -148,7 +148,7 @@ async function init() {
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
     await apiFetch('/api/auth/logout.php', { method: 'POST' });
-    window.location.href = '/index.html';
+    window.location.href = '/views/index.html';
 });
 
 init();

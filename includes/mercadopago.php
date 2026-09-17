@@ -21,9 +21,9 @@ function mp_criar_preferencia(int $userId, string $userEmail): ?string
         'payer' => ['email' => $userEmail],
         'external_reference' => (string) $userId,
         'back_urls' => [
-            'success' => $appUrl . '/pagamento_retorno.html?status=approved',
-            'pending' => $appUrl . '/pagamento_retorno.html?status=pending',
-            'failure' => $appUrl . '/pagamento_retorno.html?status=failure',
+            'success' => $appUrl . '/views/pagamento_retorno.html?status=approved',
+            'pending' => $appUrl . '/views/pagamento_retorno.html?status=pending',
+            'failure' => $appUrl . '/views/pagamento_retorno.html?status=failure',
         ],
         'auto_return' => 'approved',
         'notification_url' => $appUrl . '/webhook.php',
