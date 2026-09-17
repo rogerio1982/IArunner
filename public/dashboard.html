@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — AI Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+<nav class="flex items-center justify-between px-6 py-5 max-w-3xl mx-auto">
+    <span class="text-xl font-extrabold tracking-tight">AI <span class="text-lime-400">Runner</span></span>
+    <button id="logout-btn" class="px-4 py-2 rounded-lg text-sm font-medium border border-slate-700 hover:bg-slate-800">Sair</button>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 pb-16">
+    <h1 class="text-2xl font-bold">Olá, <span id="first-name"></span> 👋</h1>
+
+    <div id="trial-banner" class="mt-4 bg-lime-400/10 border border-lime-400/30 text-lime-300 rounded-xl px-4 py-3 text-sm text-center" hidden>
+        Você está no teste grátis: <span id="dias-restantes"></span> dia(s) restante(s).
+        <a href="/pagamento.html" class="underline font-semibold">Assinar agora</a>
+    </div>
+
+    <div id="no-access" class="mt-6 bg-slate-900 rounded-2xl p-6 shadow text-center" hidden>
+        <p class="text-slate-300">Seu período de teste grátis terminou.</p>
+        <p class="text-slate-400 text-sm mt-1">Assine o plano para continuar recebendo seus treinos.</p>
+        <a href="/pagamento.html" class="mt-4 inline-block px-6 py-3 rounded-xl bg-lime-400 text-slate-950 font-semibold hover:bg-lime-300">
+            Assinar agora
+        </a>
+    </div>
+
+    <div id="access-content" hidden>
+        <section id="today-workout" class="mt-6 bg-slate-900 rounded-2xl p-6 shadow" hidden>
+            <h2 class="text-sm uppercase tracking-widest text-lime-400 font-semibold">Treino de hoje</h2>
+            <div id="today-workout-body" class="mt-2"></div>
+        </section>
+
+        <section id="no-plan" class="mt-6 bg-slate-900 rounded-2xl p-6 shadow text-center" hidden>
+            <p class="text-slate-300">Você ainda não tem um plano de treino.</p>
+            <a href="/onboarding.html" class="mt-4 inline-block px-6 py-3 rounded-xl bg-lime-400 text-slate-950 font-semibold hover:bg-lime-300">
+                Escolher meu nível
+            </a>
+        </section>
+
+        <section class="mt-10">
+            <h2 class="text-lg font-bold">Minha semana</h2>
+            <div id="week-list" class="mt-4 space-y-3"></div>
+        </section>
+    </div>
+</main>
+
+<script src="/js/common.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
