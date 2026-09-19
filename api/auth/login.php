@@ -6,14 +6,24 @@ $input = json_body();
 $email = trim($input['email'] ?? '');
 $password = $input['password'] ?? '';
 
-$stmt = getPDO()->prepare('SELECT id, password FROM users WHERE email = ?');
+$pdo = getPDO();
+
+$stmt = $pdo->prepare('SELECT id, password FROM users WHERE email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
-if (!$user || !password_verify($password, $user['password'])) {
-    json_response(['error' => 'E-mail ou senha inválidos.'], 401);
+if ($user && password_verify($password, $user['password'])) {
+    $_SESSION['user_id'] = (int) $user['id'];
+    json_response(['ok' => true, 'role' => 'athlete']);
 }
 
-$_SESSION['user_id'] = (int) $user['id'];
+$stmt = $pdo->prepare('SELECT id, password FROM coaches WHERE email = ?');
+$stmt->execute([$email]);
+$coach = $stmt->fetch();
 
-json_response(['ok' => true]);
+if ($coach && password_verify($password, $coach['password'])) {
+    $_SESSION['coach_id'] = (int) $coach['id'];
+    json_response(['ok' => true, 'role' => 'coach']);
+}
+
+json_response(['error' => 'E-mail ou senha inválidos.'], 401);

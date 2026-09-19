@@ -10,12 +10,23 @@ if (empty($_SESSION['user_id'])) {
 $input = json_body();
 $level = $input['level'] ?? '';
 
-$validLevels = ['iniciante', 'intermediario', 'avancado'];
-
-if (!in_array($level, $validLevels, true)) {
-    json_response(['errors' => ['Selecione uma opção válida.']], 422);
+if (!in_array($level, ['iniciante', 'intermediario', 'avancado'], true)) {
+    json_response(['errors' => ['Selecione um nível válido.']], 422);
 }
 
-atribuir_plano_semanal_ao_usuario((int) $_SESSION['user_id'], $level);
+$pdo = getPDO();
+
+// Atribui automaticamente a primeira turma (ordem alfabética) daquele nível.
+$stmt = $pdo->prepare('SELECT * FROM turmas WHERE level = ? ORDER BY name ASC LIMIT 1');
+$stmt->execute([$level]);
+$turma = $stmt->fetch();
+
+$userId = (int) $_SESSION['user_id'];
+
+if ($turma) {
+    $pdo->prepare('UPDATE users SET class_id = ? WHERE id = ?')->execute([$turma['id'], $userId]);
+}
+
+atribuir_plano_semanal_ao_usuario($userId, $level);
 
 json_response(['ok' => true]);

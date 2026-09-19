@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — AI Runner</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>[hidden] { display: none !important; }</style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
 <nav class="flex items-center justify-between px-6 py-5 max-w-3xl mx-auto">
     <span class="text-xl font-extrabold tracking-tight">AI <span class="text-lime-400">Runner</span></span>
-    <button id="logout-btn" class="px-4 py-2 rounded-lg text-sm font-medium border border-slate-700 hover:bg-slate-800">Sair</button>
+    <div class="flex items-center gap-3">
+        <button id="pagamento-btn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-lime-400 text-slate-950 hover:bg-lime-300" hidden>Pagamento</button>
+        <button id="logout-btn" class="px-4 py-2 rounded-lg text-sm font-medium border border-slate-700 hover:bg-slate-800">Sair</button>
+    </div>
 </nav>
 
 <main class="max-w-3xl mx-auto px-6 pb-16">
     <h1 class="text-2xl font-bold">Olá, <span id="first-name"></span> 👋</h1>
+    <p id="class-label" class="mt-1 text-sm text-slate-400" hidden></p>
 
     <div id="trial-banner" class="mt-4 bg-lime-400/10 border border-lime-400/30 text-lime-300 rounded-xl px-4 py-3 text-sm text-center" hidden>
         Você está no teste grátis: <span id="dias-restantes"></span> dia(s) restante(s).

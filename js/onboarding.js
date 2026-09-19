@@ -7,9 +7,11 @@ document.getElementById('onboarding-form').addEventListener('submit', async (eve
     const errorsBox = document.getElementById('errors');
     errorsBox.hidden = true;
 
+    const level = form.level.value;
+
     const { ok, data } = await apiFetch('/api/onboarding.php', {
         method: 'POST',
-        body: JSON.stringify({ level: form.level.value }),
+        body: JSON.stringify({ level }),
     });
 
     if (!ok) {

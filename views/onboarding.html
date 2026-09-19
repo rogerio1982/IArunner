@@ -5,25 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seu nível — AI Runner</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>[hidden] { display: none !important; }</style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
 <main class="max-w-md mx-auto px-6 py-16">
     <a href="/views/index.html" class="text-lime-400 font-extrabold text-xl">AI Runner</a>
     <h1 class="mt-6 text-2xl font-bold">Qual é o seu nível?</h1>
-    <p class="mt-1 text-slate-400 text-sm">Vamos montar seu plano de treino da semana.</p>
+    <p class="mt-1 text-slate-400 text-sm">Vamos montar seu plano de treino da semana com base no seu nível.</p>
 
     <div id="errors" class="mt-4 bg-red-950 border border-red-700 text-red-300 rounded-lg p-3 text-sm" hidden></div>
 
-    <form id="onboarding-form" class="mt-6 space-y-4">
-        <div>
-            <label class="block text-sm text-slate-300 mb-1">Nível</label>
-            <select name="level" required class="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2">
-                <option value="iniciante">Iniciante</option>
-                <option value="intermediario">Intermediário</option>
-                <option value="avancado">Avançado</option>
-            </select>
-        </div>
+    <form id="onboarding-form" class="mt-6 space-y-3">
+        <label class="flex items-center gap-3 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 cursor-pointer has-[:checked]:border-lime-400">
+            <input type="radio" name="level" value="iniciante" required class="accent-lime-400">
+            <span>Iniciante</span>
+        </label>
+        <label class="flex items-center gap-3 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 cursor-pointer has-[:checked]:border-lime-400">
+            <input type="radio" name="level" value="intermediario" class="accent-lime-400">
+            <span>Intermediário</span>
+        </label>
+        <label class="flex items-center gap-3 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 cursor-pointer has-[:checked]:border-lime-400">
+            <input type="radio" name="level" value="avancado" class="accent-lime-400">
+            <span>Avançado</span>
+        </label>
+
         <button type="submit" class="w-full py-3 rounded-xl bg-lime-400 text-slate-950 font-semibold hover:bg-lime-300">
             Continuar
         </button>

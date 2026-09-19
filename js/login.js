@@ -19,5 +19,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         return;
     }
 
-    window.location.href = '/views/dashboard.html';
+    window.location.href = data.role === 'coach'
+        ? '/views/admin/coaching.html'
+        : '/views/dashboard.html';
 });

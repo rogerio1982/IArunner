@@ -28,22 +28,27 @@ pago via Mercado Pago.
    e-mail, WhatsApp e senha. Cria o usuário com **7 dias de teste grátis**
    (`trial_ends_at`) e já inicia a sessão.
 3. **Onboarding** (`views/onboarding.html` → `api/onboarding.php`) — usuário
-   escolhe o nível (iniciante / intermediário / avançado). O sistema monta um
-   **plano semanal de 7 dias** (segunda a domingo da semana atual) a partir
-   da tabela `workouts` para aquele nível, e associa ao usuário em
-   `user_workouts` com status `pending`.
+   escolhe seu **nível** (iniciante/intermediário/avançado). O sistema
+   atribui automaticamente a **primeira turma daquele nível em ordem
+   alfabética** (tabela `turmas`) e monta um **plano semanal de 7 dias**
+   (segunda a domingo da semana atual) a partir do catálogo de `treinos_ia`
+   do nível escolhido — pega os treinos mais recentes, um por dia, repetindo
+   o catálogo se houver menos de 7 cadastrados — e associa ao usuário em
+   `user_treinos_ia` (com `date` e status `pending`).
 4. **Dashboard** (`views/dashboard.html` → `api/dashboard.php`) — tela
    principal, mostra:
    - Saudação com o primeiro nome do usuário.
    - Aviso de dias restantes de teste grátis (se ainda estiver no trial).
    - Bloqueio de acesso (com CTA para assinar) se o trial acabou e não há
      assinatura ativa.
-   - O treino do dia atual (aquecimento, treino principal, desaquecimento,
-     distância/tempo, foco) com botão para marcar como realizado.
-   - A lista dos 7 treinos da semana com status (pendente/realizado).
-5. **Marcar treino como feito** (`api/treinos.php`) — atualiza o status do
-   treino do dia para `done`. Valida que o registro pertence ao usuário
-   logado (evita que um usuário marque treino de outro).
+   - O treino do dia atual: nome e conteúdo (texto livre, formatação
+     preservada) do `treinos_ia` do dia, com botão para enviar feedback.
+   - A lista dos 7 treinos da semana com status (pendente/realizado/parcial/
+     não realizado).
+5. **Feedback do treino** (`api/treinos.php`) — ao concluir o treino do dia,
+   o atleta envia status (`done`/`partial`/`not_done`), PSE (percepção de
+   esforço, 1 a 10) e observações livres. Valida que o registro pertence ao
+   usuário logado (evita que um usuário marque treino de outro).
 6. **Assinatura** (`views/pagamento.html` → `api/pagamento.php`) — cria uma
    preferência de pagamento no Mercado Pago (Checkout Pro) e redireciona o
    usuário para a página de pagamento deles.
@@ -58,18 +63,77 @@ pago via Mercado Pago.
    usuário (`external_reference` = id do usuário).
 9. **Logout** (`api/auth/logout.php`) — destrói a sessão.
 
+## Área do treinador (coaching)
+
+- **Login unificado** (`views/login.html` → `api/auth/login.php`) — a mesma
+  tela de login serve atletas e treinadores. O back-end tenta autenticar
+  primeiro contra `users` (atleta) e depois contra `coaches` (treinador),
+  respondendo `role: 'athlete'` ou `role: 'coach'`. O front redireciona para
+  `/views/dashboard.html` ou `/views/admin/coaching.html` conforme o papel.
+  Treinadores ficam na tabela `coaches` (nome, e-mail, senha com
+  `password_hash`), sessão em `$_SESSION['coach_id']`
+  (`includes/admin_auth.php` → `require_admin()`).
+- **Atletas** (`action=overview`) — a aba "Atletas" do dashboard mostra uma
+  **lista única com todos os atletas** (`allAthletes` na resposta: nome,
+  e-mail, WhatsApp, nome da turma — "Sem turma" quando não vinculado —,
+  status de acesso/assinatura), sem agrupar por turma; agrupar por turma
+  continua existindo só na aba "Turmas" (`classes` na resposta, usado por
+  `renderClassCards`). Traz também `recentAthletes`: os 10 atletas mais
+  recentes por `created_at`, exibidos no topo da aba "Atletas" para o
+  treinador perceber rapidamente quando chegam novos cadastros (essa seção
+  some enquanto há uma busca ativa).
+- **Detalhe do atleta** (`action=athlete&user_id=`) — dados do atleta e
+  histórico dos últimos 30 treinos com status, PSE e observações enviadas
+  pelo atleta. Permite mover o atleta para outra turma (`action=move_athlete`).
+- **Personalizar treino do atleta** (`action=update_user_treino`) — no
+  histórico do atleta, o treinador pode editar nome/conteúdo do treino de um
+  dia específico. A edição fica em `user_treinos_ia.nome_personalizado` /
+  `conteudo_personalizado` (colunas nullable) e vale **só para aquele
+  atleta e aquele dia** — o treino_ia original do catálogo compartilhado
+  não é alterado, então outros atletas que usam o mesmo treino continuam
+  vendo a versão original. As queries em `api/dashboard.php` e
+  `api/admin/coaching.php` usam `COALESCE(personalizado, original)` para
+  decidir o que exibir. Enviar nome/conteúdo vazios remove a personalização
+  e volta a mostrar o treino do catálogo.
+- **Gestão de turmas** (`action=save_class`, `action=delete_class`) — CRUD de
+  turmas. Excluir uma turma não apaga os atletas: `users.class_id` vira NULL
+  (`ON DELETE SET NULL`).
+- **Treino com IA** (`action=treinos_ia`, `action=treino_ia`,
+  `action=save_treino_ia`, `action=delete_treino_ia`) — CRUD de treinos em
+  formato de texto livre (tabela `treinos_ia`: nome, tipo/nível, conteúdo —
+  **sem** dia da semana, é um catálogo por nível), pensado para receber
+  treinos gerados por IA no futuro. O campo `conteudo` preserva a formatação
+  exata (quebras de linha) digitada, sem parsing estruturado — front-end usa
+  `<textarea>` na edição e `<pre>` na exibição. **É a fonte do plano de
+  treino do atleta**: o dia da semana é uma propriedade da atribuição
+  (`user_treinos_ia.date`), não do treino em si — ver
+  `atribuir_plano_semanal_ao_usuario()`.
+- **Busca** — as três listagens do dashboard de coaching (Atletas, Turmas,
+  Treino com IA) têm um campo de busca client-side (filtragem em JS sobre
+  os dados já carregados, sem chamada extra à API): atletas por
+  nome/e-mail/WhatsApp, turmas por nome/descrição, treinos por nome. A
+  busca de atletas ignora acentuação/caixa (`normalize()` em
+  `js/admin_coaching.js`) e esconde a seção "Atletas recentes" enquanto
+  há um termo digitado.
+
 ## Regras de negócio importantes
 
 - **Acesso liberado** (`usuario_tem_acesso()` em `includes/functions.php`) se
   a assinatura está `active` **ou** se o usuário ainda está dentro do período
   de teste de 7 dias (`trial_ends_at > now()`).
-- **Plano semanal** é fixo por nível (não é gerado por IA ainda — há um TODO
-  no código para futuramente gerar dinamicamente via OpenAI).
-- **Importação de treinos** (`views/admin/import.html` →
-  `api/admin/import.php`) — área administrativa protegida por senha
-  (`ADMIN_PASSWORD` no `.env`, verificada com `hash_equals`). Permite subir um
-  CSV com o plano de treinos por nível/dia da semana, que é inserido/atualizado
-  na tabela `workouts` (`INSERT ... ON DUPLICATE KEY UPDATE`).
+- **Plano semanal** vem de `treinos_ia` (catálogo por nível), cadastrado
+  pelo treinador na aba "Treino com IA" do dashboard de coaching — pensado
+  para no futuro ser gerado dinamicamente por IA sem mudar o schema. Não há
+  mais importação de treinos via CSV (tela e endpoint removidos).
+- **Geração automática da semana** (`garantir_plano_semanal_atual()` em
+  `includes/functions.php`) — não há cron job; a cada chamada de
+  `api/dashboard.php`, o sistema verifica se a semana atual (segunda a
+  domingo) do atleta já tem registros em `user_treinos_ia`. Se não tiver
+  (nova semana começou, ou é o primeiro acesso), gera automaticamente a
+  partir do nível da turma do atleta, chamando
+  `atribuir_plano_semanal_ao_usuario()`. Atleta sem turma não gera nada.
+  Isso garante que o atleta sempre tenha o plano da semana corrente pronto,
+  mesmo sem ninguém acessar o sistema entre uma semana e outra.
 
 ## Estrutura de pastas
 
@@ -80,18 +144,18 @@ front-end organizado em `views/`:
 ```
 views/                → páginas HTML do front-end estático
   *.html              → uma página por tela (ex: /views/login.html)
-  admin/import.html   → tela de importação de treinos (admin)
 js/*.js               → lógica de cada página (fetch para a API, manipulação de DOM)
 
 api/                  → back-end, só responde JSON, nunca HTML
   _bootstrap.php      → helper comum (sessão, header JSON, json_response())
   auth/               → login, cadastro, logout, "quem sou eu"
   dashboard.php       → dados do dashboard (treino do dia + semana)
-  onboarding.php      → atribuição do plano semanal por nível
-  treinos.php         → marcar treino como concluído
+  classes.php         → lista as turmas disponíveis
+  onboarding.php      → atribuição de turma + plano semanal por nível
+  treinos.php         → registrar feedback do treino (status, PSE, observações)
   pagamento.php       → criar preferência de pagamento (Mercado Pago)
   pagamento_retorno.php → mensagem de retorno do pagamento
-  admin/import.php    → importação de treinos via CSV
+  admin/coaching.php  → dashboard do treinador (atletas, turmas, treinos IA)
 
 includes/             → lógica compartilhada usada pela API (bloqueado via .htaccess)
   auth.php            → require_login(), current_user()
@@ -101,7 +165,8 @@ includes/             → lógica compartilhada usada pela API (bloqueado via .h
 config/database.php   → conexão PDO + leitura de variáveis de ambiente (.env) (bloqueado via .htaccess)
 
 webhook.php            → recebe notificações de pagamento do Mercado Pago
-database.sql           → schema do banco (tabelas users, workouts, user_workouts)
+database.sql           → schema do banco (users, turmas, coaches, treinos_ia,
+                          user_treinos_ia)
 migration_*.sql        → migrações históricas do schema
 .htaccess              → bloqueia acesso HTTP direto a .env/.sql/.md na raiz
 includes/.htaccess, config/.htaccess → bloqueiam acesso direto a essas pastas

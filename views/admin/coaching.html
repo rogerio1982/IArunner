@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaching — AI Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>[hidden] { display: none !important; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen" style="background:#020617;color:#f1f5f9;min-height:100vh;margin:0;font-family:sans-serif;">
+
+<div id="app" class="max-w-6xl mx-auto px-6 py-8" hidden>
+    <nav class="flex items-center justify-between mb-8">
+        <span class="text-xl font-extrabold tracking-tight">AI Runner <span class="text-lime-400">Coaching</span></span>
+        <div class="flex gap-3">
+            <button id="logout-btn" class="px-3 py-2 rounded-lg text-sm border border-slate-700 hover:bg-slate-800">Sair</button>
+        </div>
+    </nav>
+
+    <div class="flex gap-3 border-b border-slate-800 mb-6">
+        <button data-tab="atletas" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-lime-400 text-lime-400">Atletas</button>
+        <button data-tab="turmas" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Turmas</button>
+        <button data-tab="treinos-ia" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Treino com IA</button>
+    </div>
+
+    <section id="tab-atletas" class="tab-panel">
+        <input id="athletes-search" type="search" placeholder="Buscar atleta por nome, e-mail ou WhatsApp..."
+            class="w-full mb-6 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm">
+
+        <div id="recent-athletes-section" class="bg-slate-900 rounded-2xl p-5 mb-6">
+            <h3 class="font-bold text-lime-400">Atletas recentes</h3>
+            <p class="text-xs text-slate-500 mt-1">Últimos cadastros, do mais recente para o mais antigo.</p>
+            <div id="recent-athletes-list" class="mt-3 divide-y divide-slate-800"></div>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-5">
+            <h3 class="font-bold text-lime-400">Todos os atletas <span id="athletes-count" class="text-slate-500 font-normal text-sm"></span></h3>
+            <div id="athletes-list" class="mt-3 divide-y divide-slate-800"></div>
+        </div>
+    </section>
+
+    <section id="tab-turmas" class="tab-panel" hidden>
+        <div class="flex items-center gap-3 mb-4">
+            <input id="classes-search" type="search" placeholder="Buscar turma por nome ou descrição..."
+                class="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm">
+            <button id="new-class-btn" class="px-4 py-2 rounded-lg bg-lime-400 text-slate-950 text-sm font-semibold hover:bg-lime-300 whitespace-nowrap">
+                + Nova turma
+            </button>
+        </div>
+        <div id="turmas-list" class="grid md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <section id="tab-treinos-ia" class="tab-panel" hidden>
+        <div class="flex items-center gap-3 mb-4">
+            <input id="treinos-ia-search" type="search" placeholder="Buscar treino por nome..."
+                class="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2 text-sm">
+            <label class="text-sm text-slate-300 whitespace-nowrap">Tipo:</label>
+            <select id="treino-ia-filter" class="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-sm">
+                <option value="">Todos</option>
+                <option value="iniciante">Iniciante</option>
+                <option value="intermediario">Intermediário</option>
+                <option value="avancado">Avançado</option>
+            </select>
+            <button id="new-treino-ia-btn" class="px-4 py-2 rounded-lg bg-lime-400 text-slate-950 text-sm font-semibold hover:bg-lime-300 whitespace-nowrap">
+                + Novo treino IA
+            </button>
+        </div>
+        <div id="treinos-ia-list" class="space-y-3"></div>
+    </section>
+</div>
+
+<!-- Modal genérico -->
+<div id="modal-backdrop" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4" hidden>
+    <div id="modal-box" class="bg-slate-900 rounded-2xl p-6 shadow max-w-lg w-full max-h-[85vh] overflow-y-auto"></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/admin_coaching.js"></script>
+</body>
+</html>

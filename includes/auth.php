@@ -20,7 +20,7 @@ function current_user(): ?array
         return null;
     }
 
-    $stmt = getPDO()->prepare('SELECT id, name, email, whatsapp, subscription_status, trial_ends_at FROM users WHERE id = ?');
+    $stmt = getPDO()->prepare('SELECT id, name, email, whatsapp, subscription_status, class_id, target_distance, avg_pace, photo_url, trial_ends_at FROM users WHERE id = ?');
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
 
