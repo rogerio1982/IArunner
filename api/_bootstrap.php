@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../includes/logger.php';
+registrar_handlers_de_erro();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

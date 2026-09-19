@@ -19,6 +19,22 @@ pago via Mercado Pago.
   chamada de API.
 - **Pagamentos**: integração com Mercado Pago (Checkout Pro) via
   `includes/mercadopago.php`.
+- **Raiz do site** (`index.php`): redireciona (302) para `/views/index.html`.
+  Sem isso, acessar o domínio raiz na Hostinger dá 403 (Apache bloqueia
+  listagem de diretório por não haver `index.html`/`index.php` nele).
+- **Log de erros** (`includes/logger.php`, pasta `logs/`): todo erro fatal
+  ou exceção não tratada do PHP é capturado automaticamente
+  (`registrar_handlers_de_erro()`, chamado em `api/_bootstrap.php`) e
+  gravado em `logs/app.log`. Erros do JavaScript no navegador do usuário
+  (`window.onerror`, promises rejeitadas) são capturados em `js/common.js`
+  e enviados para `api/log_client_error.php`, caindo no mesmo arquivo.
+  A pasta `logs/` é protegida por `.htaccess` (igual `includes/`/`config/`)
+  e o arquivo `.log` também é bloqueado pelo `.htaccess` da raiz — nunca
+  acessível por URL direta em produção. O log real (`app.log`) não é
+  versionado (`.gitignore`); só a pasta e a proteção. Para consultar os
+  erros sem acessar o servidor por FTP, o dashboard de coaching tem uma
+  aba **"Logs"** (`action=view_logs` em `api/admin/coaching.php`,
+  autenticada como treinador) que mostra as últimas linhas.
 
 ## Fluxo do usuário
 

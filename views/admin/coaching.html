@@ -21,6 +21,7 @@
         <button data-tab="atletas" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-lime-400 text-lime-400">Atletas</button>
         <button data-tab="turmas" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Turmas</button>
         <button data-tab="treinos-ia" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Treino com IA</button>
+        <button data-tab="logs" class="tab-btn px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200">Logs</button>
     </div>
 
     <section id="tab-atletas" class="tab-panel">
@@ -65,6 +66,16 @@
             </button>
         </div>
         <div id="treinos-ia-list" class="space-y-3"></div>
+    </section>
+
+    <section id="tab-logs" class="tab-panel" hidden>
+        <div class="flex items-center gap-3 mb-4">
+            <p class="text-sm text-slate-400">Últimos erros registrados (aplicação + navegador dos usuários).</p>
+            <button id="refresh-logs-btn" class="ml-auto px-4 py-2 rounded-lg bg-lime-400 text-slate-950 text-sm font-semibold hover:bg-lime-300 whitespace-nowrap">
+                Atualizar
+            </button>
+        </div>
+        <pre id="logs-output" class="bg-slate-900 rounded-2xl p-4 text-xs text-slate-300 whitespace-pre-wrap overflow-x-auto max-h-[70vh] overflow-y-auto"></pre>
     </section>
 </div>
 

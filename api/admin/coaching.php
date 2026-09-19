@@ -212,4 +212,20 @@ if ($action === 'delete_treino_ia') {
     json_response(['ok' => true]);
 }
 
+// Mostra as últimas linhas do log de erros da aplicação (logs/app.log).
+if ($action === 'view_logs') {
+    $lines = (int) ($_GET['lines'] ?? 200);
+    $lines = max(1, min($lines, 1000));
+
+    if (!file_exists(LOG_FILE)) {
+        json_response(['log' => '']);
+    }
+
+    $content = file_get_contents(LOG_FILE);
+    $allLines = explode("\n", trim($content));
+    $lastLines = array_slice($allLines, -$lines);
+
+    json_response(['log' => implode("\n", $lastLines)]);
+}
+
 json_response(['error' => 'Ação inválida.'], 400);

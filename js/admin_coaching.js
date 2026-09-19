@@ -64,6 +64,10 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 
         document.querySelectorAll('.tab-panel').forEach((p) => { p.hidden = true; });
         document.getElementById(`tab-${btn.dataset.tab}`).hidden = false;
+
+        if (btn.dataset.tab === 'logs') {
+            loadLogs();
+        }
     });
 });
 
@@ -511,6 +515,23 @@ function openTreinoIaModal(treino) {
         closeModal();
         loadTreinosIa();
     });
+}
+
+// ---------- Logs ----------
+
+document.getElementById('refresh-logs-btn').addEventListener('click', loadLogs);
+
+async function loadLogs() {
+    const output = document.getElementById('logs-output');
+    output.textContent = 'Carregando...';
+
+    const { ok, data } = await api('view_logs&lines=300');
+    if (!ok) {
+        output.textContent = 'Não foi possível carregar os logs.';
+        return;
+    }
+
+    output.textContent = data.log && data.log.trim() ? data.log : 'Nenhum erro registrado ainda.';
 }
 
 // ---------- Init ----------
