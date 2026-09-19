@@ -164,12 +164,12 @@ async function init() {
 }
 
 document.getElementById('pagamento-btn').addEventListener('click', () => {
-    window.location.href = '/views/pagamento.html';
+    window.location.href = '/pagamento.html';
 });
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
     await apiFetch('/api/auth/logout.php', { method: 'POST' });
-    window.location.href = '/views/index.html';
+    window.location.href = '/index_page.html';
 });
 
 init();

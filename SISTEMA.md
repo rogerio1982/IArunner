@@ -7,11 +7,15 @@ pago via Mercado Pago.
 ## Arquitetura
 
 - **Front-end**: HTML + CSS (Tailwind via CDN) + JavaScript puro, sem
-  framework nem build tool. Páginas em `views/*.html`, scripts em `js/*.js`.
-  Precisam ficar sob a raiz do projeto (não numa subpasta tipo `public/`)
-  porque o deploy da Hostinger serve o repositório clonado diretamente, sem
-  opção de apontar para uma subpasta como document root — por isso as URLs
-  públicas das páginas são `/views/login.html`, `/views/dashboard.html` etc.
+  framework nem build tool. Páginas HTML na raiz do projeto (`*.html`),
+  scripts em `js/*.js`. Ficam na raiz (não numa subpasta tipo `views/` ou
+  `public/`) porque o deploy da Hostinger serve o repositório clonado
+  diretamente, sem opção de apontar para uma subpasta como document root —
+  colocar as páginas numa subpasta causava 404 direto nelas em produção.
+  Por isso as URLs públicas são `/login.html`, `/dashboard.html` etc., com
+  a landing page em `/index_page.html` (não pode se chamar `index.html`
+  porque colidiria com `index.php`, que é quem responde `/`). A área do
+  treinador fica em `/admin/coaching.html` (única subpasta que sobrou).
 - **Back-end**: PHP puro (sem framework), funcionando como API JSON em `api/`.
   Front e back se comunicam via `fetch()`.
 - **Banco de dados**: MySQL/MariaDB (schema em `database.sql`).
@@ -19,9 +23,10 @@ pago via Mercado Pago.
   chamada de API.
 - **Pagamentos**: integração com Mercado Pago (Checkout Pro) via
   `includes/mercadopago.php`.
-- **Raiz do site** (`index.php`): redireciona (302) para `/views/index.html`.
-  Sem isso, acessar o domínio raiz na Hostinger dá 403 (Apache bloqueia
-  listagem de diretório por não haver `index.html`/`index.php` nele).
+- **Raiz do site** (`index.php`): redireciona (302) para `/index_page.html`
+  (a landing page). Sem isso, acessar o domínio raiz na Hostinger dá 403
+  (Apache bloqueia listagem de diretório por não haver `index.html`/
+  `index.php` nele).
 - **Log de erros** (`includes/logger.php`, pasta `logs/`): todo erro fatal
   ou exceção não tratada do PHP é capturado automaticamente
   (`registrar_handlers_de_erro()`, chamado em `api/_bootstrap.php`) e
@@ -38,12 +43,12 @@ pago via Mercado Pago.
 
 ## Fluxo do usuário
 
-1. **Landing page** (`views/index.html`) — apresenta o produto, com CTAs
+1. **Landing page** (`index_page.html`) — apresenta o produto, com CTAs
    para criar conta ou entrar.
-2. **Cadastro** (`views/cadastro.html` → `api/auth/cadastro.php`) — nome,
+2. **Cadastro** (`cadastro.html` → `api/auth/cadastro.php`) — nome,
    e-mail, WhatsApp e senha. Cria o usuário com **7 dias de teste grátis**
    (`trial_ends_at`) e já inicia a sessão.
-3. **Onboarding** (`views/onboarding.html` → `api/onboarding.php`) — usuário
+3. **Onboarding** (`onboarding.html` → `api/onboarding.php`) — usuário
    escolhe seu **nível** (iniciante/intermediário/avançado). O sistema
    atribui automaticamente a **primeira turma daquele nível em ordem
    alfabética** (tabela `turmas`) e monta um **plano semanal de 7 dias**
@@ -51,7 +56,7 @@ pago via Mercado Pago.
    do nível escolhido — pega os treinos mais recentes, um por dia, repetindo
    o catálogo se houver menos de 7 cadastrados — e associa ao usuário em
    `user_treinos_ia` (com `date` e status `pending`).
-4. **Dashboard** (`views/dashboard.html` → `api/dashboard.php`) — tela
+4. **Dashboard** (`dashboard.html` → `api/dashboard.php`) — tela
    principal, mostra:
    - Saudação com o primeiro nome do usuário.
    - Aviso de dias restantes de teste grátis (se ainda estiver no trial).
@@ -65,10 +70,10 @@ pago via Mercado Pago.
    o atleta envia status (`done`/`partial`/`not_done`), PSE (percepção de
    esforço, 1 a 10) e observações livres. Valida que o registro pertence ao
    usuário logado (evita que um usuário marque treino de outro).
-6. **Assinatura** (`views/pagamento.html` → `api/pagamento.php`) — cria uma
+6. **Assinatura** (`pagamento.html` → `api/pagamento.php`) — cria uma
    preferência de pagamento no Mercado Pago (Checkout Pro) e redireciona o
    usuário para a página de pagamento deles.
-7. **Retorno do pagamento** (`views/pagamento_retorno.html` →
+7. **Retorno do pagamento** (`pagamento_retorno.html` →
    `api/pagamento_retorno.php`) — página de retorno do Mercado Pago, mostra
    mensagem conforme o status (`approved`, `pending`, `failure`). O status
    real da assinatura só é confirmado pelo webhook, não por esse parâmetro
@@ -81,11 +86,11 @@ pago via Mercado Pago.
 
 ## Área do treinador (coaching)
 
-- **Login unificado** (`views/login.html` → `api/auth/login.php`) — a mesma
+- **Login unificado** (`login.html` → `api/auth/login.php`) — a mesma
   tela de login serve atletas e treinadores. O back-end tenta autenticar
   primeiro contra `users` (atleta) e depois contra `coaches` (treinador),
   respondendo `role: 'athlete'` ou `role: 'coach'`. O front redireciona para
-  `/views/dashboard.html` ou `/views/admin/coaching.html` conforme o papel.
+  `/dashboard.html` ou `/admin/coaching.html` conforme o papel.
   Treinadores ficam na tabela `coaches` (nome, e-mail, senha com
   `password_hash`), sessão em `$_SESSION['coach_id']`
   (`includes/admin_auth.php` → `require_admin()`).
@@ -154,13 +159,17 @@ pago via Mercado Pago.
 ## Estrutura de pastas
 
 Tudo fica sob a raiz do repositório (a Hostinger publica a raiz do repo
-clonado, sem opção de apontar para uma subpasta como document root), com o
-front-end organizado em `views/`:
+clonado, sem opção de apontar para uma subpasta como document root). As
+páginas HTML ficam direto na raiz (não em `views/` — isso causava 404 em
+produção):
 
 ```
-views/                → páginas HTML do front-end estático
-  *.html              → uma página por tela (ex: /views/login.html)
-js/*.js               → lógica de cada página (fetch para a API, manipulação de DOM)
+*.html                 → páginas do front-end estático, uma por tela
+                          (ex: /login.html, /dashboard.html)
+index_page.html         → landing page (não pode ser index.html, colidiria
+                          com index.php que responde a "/")
+admin/coaching.html     → dashboard do treinador
+js/*.js                 → lógica de cada página (fetch para a API, manipulação de DOM)
 
 api/                  → back-end, só responde JSON, nunca HTML
   _bootstrap.php      → helper comum (sessão, header JSON, json_response())
@@ -201,7 +210,7 @@ são endpoints, não implementação interna.
 - Sessão PHP (`$_SESSION['user_id']`) com cookie enviado pelo navegador
   (`fetch(..., { credentials: 'include' })` no front).
 - Toda página do front que exige login chama `api/auth/me.php` ao carregar;
-  se não autenticado, redireciona para `/views/login.html`.
+  se não autenticado, redireciona para `/login.html`.
 - Senhas de usuário com `password_hash`/`password_verify`.
 - Senha de admin comparada com `hash_equals` (evita timing attack).
 - Proteção contra IDOR em `api/treinos.php`: o `UPDATE` sempre filtra por

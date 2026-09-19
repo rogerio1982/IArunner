@@ -20,6 +20,6 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     }
 
     window.location.href = data.role === 'coach'
-        ? '/views/admin/coaching.html'
-        : '/views/dashboard.html';
+        ? '/admin/coaching.html'
+        : '/dashboard.html';
 });

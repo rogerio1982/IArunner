@@ -36,7 +36,7 @@ document.getElementById('modal-backdrop').addEventListener('click', (e) => {
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
     await api('logout', { method: 'POST' });
-    window.location.href = '/views/login.html';
+    window.location.href = '/login.html';
 });
 
 async function showApp() {
@@ -540,12 +540,12 @@ async function loadLogs() {
     try {
         const { ok } = await api('overview');
         if (!ok) {
-            window.location.href = '/views/login.html';
+            window.location.href = '/login.html';
             return;
         }
         showApp();
     } catch (err) {
         console.error('Falha ao verificar sessão de admin:', err);
-        window.location.href = '/views/login.html';
+        window.location.href = '/login.html';
     }
 })();

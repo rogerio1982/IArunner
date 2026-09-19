@@ -26,5 +26,5 @@ document.getElementById('onboarding-form').addEventListener('submit', async (eve
         return;
     }
 
-    window.location.href = '/views/dashboard.html';
+    window.location.href = '/dashboard.html';
 });

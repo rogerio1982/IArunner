@@ -27,5 +27,5 @@ document.getElementById('cadastro-form').addEventListener('submit', async (event
         return;
     }
 
-    window.location.href = '/views/onboarding.html';
+    window.location.href = '/onboarding.html';
 });
