@@ -183,8 +183,10 @@ config/database.php   → conexão PDO + leitura de variáveis de ambiente (.env
 webhook.php            → recebe notificações de pagamento do Mercado Pago
 database.sql           → schema do banco (users, turmas, coaches, treinos_ia,
                           user_treinos_ia)
-migration_*.sql        → migrações históricas do schema
-.htaccess              → bloqueia acesso HTTP direto a .env/.sql/.md na raiz
+migrations/*.sql       → migrações históricas do schema, uma por mudança
+.htaccess              → bloqueia acesso HTTP direto a .env/.sql/.md/.log
+                          (regra por extensão, cobre toda a árvore, incluindo
+                          migrations/ e logs/)
 includes/.htaccess, config/.htaccess → bloqueiam acesso direto a essas pastas
 ```
 
