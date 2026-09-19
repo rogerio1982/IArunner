@@ -1,3 +1,5 @@
+DirectoryIndex index.php index_page.html
+
 <FilesMatch "(\.env|\.sql|\.md|\.log)$">
     <IfModule mod_authz_core.c>
         Require all denied
