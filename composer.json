@@ -1,0 +1,11 @@
+{
+    "name": "ai-runner/app",
+    "description": "AI Runner - plataforma de treinos de corrida",
+    "require": {
+        "php": ">=8.1",
+        "robmorgan/phinx": "^0.16"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

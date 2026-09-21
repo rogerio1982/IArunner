@@ -4,3 +4,4 @@ uploads/*
 .claude/
 logs/*.log
 migrations/dados_locais_export.sql
+/vendor/
